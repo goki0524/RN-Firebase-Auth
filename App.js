@@ -3,7 +3,9 @@ import { StyleSheet, Text, View } from 'react-native'
 import { Container, Content, Header, Form, Input, Item, Button, Label } from 'native-base'
 import * as firebase from 'firebase'
 import firebaseConfig from './config/firebase/firebaseConfig.json'
-// import { Facebook } from 'expo'
+
+
+firebase.initializeApp(firebaseConfig)
 
 export default class App extends React.Component {
 
@@ -17,8 +19,6 @@ export default class App extends React.Component {
   }
 
   componentWillMount() {
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig)
 
     firebase.auth().onAuthStateChanged((user)=>{
       if(user != null){
@@ -36,8 +36,8 @@ export default class App extends React.Component {
 
       firebase.auth().createUserWithEmailAndPassword(email, password)
     }
-    catch (error) {
-      console.log(error.toString())
+    catch (e) {
+      console.warn(e)
     }
   }
 
@@ -48,13 +48,13 @@ export default class App extends React.Component {
         alert("ログインしました。")
         console.log(user)
       })
-      .catch((error) => {
+      .catch((e) => {
         alert("ログインできませんでした。EmailまたはPasswordが有効ではありません。")
-        console.log(error)
+        console.warn(e)
       })
     }
-    catch (error) {
-      console.log(error.toString())
+    catch (e) {
+      console.warn(e)
     }
   }
 
@@ -64,41 +64,40 @@ export default class App extends React.Component {
     if(type == 'success') {
       const credential = firebase.auth.FacebookAuthProvider.credential(token)
 
-      firebase.auth().signInWithCredential(credential).catch((error) => {
-        console.log(error)
+      firebase.auth().signInWithCredential(credential).catch((e) => {
+        console.warn(e)
       })
     }
   }
 
   getCurrentUser = () => {
     try {
-     let user = firebase.auth().currentUser
-     console.log(`CurrentUser: ${user}`)
-     return(user)
-
+      const user = firebase.auth().currentUser
+      console.log(user)
+      return(user)
     }
-    catch (error) {
-      console.log(error.toString())
+    catch (e) {
+      console.warn(e)
     }
   }
 
   signOut = () => {
     try {
-      let user = this.getCurrentUser()
+      const user = this.getCurrentUser()
       if(user){
         firebase.auth().signOut()
         .then(() => {
           alert("ログアウトしました。")
           console.log("SignOut")
         })
-        .catch((error) => {
+        .catch((e) => {
           alert("ログアウトできませんでした。")
-          console.log(error.toString())
+          console.warn(e)
         })
       }
     }
-    catch (error) {
-      console.log(error.toString())
+    catch (e) {
+      console.warn(e)
     }
   }
 
@@ -171,23 +170,6 @@ export default class App extends React.Component {
             <Text>ログアウト</Text>
           </Button>
 
-          {/* <Button style={{marginTop: 20}}
-            full
-            rounded
-            info
-            onPress={()=> this.signUpUser(this.state.email, this.state.password)}
-          >
-            <Text style={{color: 'white'}}>Twitterで新規登録</Text>
-          </Button>
-
-          <Button style={{marginTop: 20}}
-            full
-            rounded
-            light
-            onPress={()=> this.signUpUser(this.state.email, this.state.password)}
-          >
-            <Text>Googleで新規登録</Text>
-          </Button> */}
         </Form>
       </Container>
     )
